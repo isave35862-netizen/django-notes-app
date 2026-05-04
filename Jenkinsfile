@@ -3,6 +3,7 @@ pipeline {
     agent { label 'vinod' }
 
     // Trigger pipeline on GitHub push events
+    // done
     triggers {
         githubPush()
     }
