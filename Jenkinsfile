@@ -1,9 +1,8 @@
-@Library("Raj-library") _
+@Library('Jenkins-shared-libraries') _
+
 pipeline {
     agent { label 'vinod' }
 
-    // Trigger pipeline on GitHub push events
-    // done
     triggers {
         githubPush()
     }
@@ -11,7 +10,8 @@ pipeline {
     stages {
         stage('Hello') {
             steps {
-                jenkins()   // calls vars/jenkins.groovy
+                // calls vars/jenkins.groovy
+                jenkins()
             }
         }
 
@@ -26,36 +26,41 @@ pipeline {
 
         stage('Code') {
             steps {
-                echo 'Cloning the code'
-                cloneRepo('https://github.com/LondheShubham153/django-notes-app.git', 'main')
-                echo 'Code cloning successful'
+                script {
+                    echo 'Cloning the code'
+                    clone('https://github.com/isave35862-netizen/django-notes-app.git', 'main')
+                    echo 'Code cloning successful'
+                }
             }
         }
 
         stage('Build') {
             steps {
                 echo 'Building the Docker image'
-                dockerBuild('notes-app', 'latest', 'trainwithshubham')
+                dockerBuild('notes-app', 'latest', 'rajratnaisave')
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Running tests'
-                // Add your test commands here, e.g. pytest or unit tests
+                // Add your test commands here
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying with docker-compose'
-                sh 'docker compose && down docker-compose up -d --build'
+                // Corrected syntax: "docker-compose down && docker-compose up ..."
+                sh 'docker-compose down && docker-compose up -d --build'
             }
         }
 
         stage('Docker Push') {
             steps {
-                dockerPush('notes-app', 'latest', 'trainwithshubham')
+                script {
+                    docker_push('notes-app', 'latest', 'rajratnaisave')
+                }
             }
         }
     }
